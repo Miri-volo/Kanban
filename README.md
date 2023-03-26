@@ -1,6 +1,11 @@
 # Kanban
 Task Management Desktop Application 
+
 Members: 
-Miri VOlozhisnky
+
+Miri Volozhisnky
+
 Lior Kummer
+
 Sapir Yakhin
+
