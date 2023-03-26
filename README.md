@@ -2,10 +2,7 @@
 Task Management Desktop Application 
 
 Members: 
-
-Miri Volozhisnky
-
-Lior Kummer
-
+Miri Volozhisnky,
+Lior Kummer,
 Sapir Yakhin
 
