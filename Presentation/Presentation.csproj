@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon />
+    <StartupObject />
+    <AssemblyName>IntroSE.Kanban.Presentation</AssemblyName>
+    <RootNamespace>IntroSE.Kanban.Presentation</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="View\shutterstock_658408300-600x600.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Backend\Backend.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="View\shutterstock_658408300-600x600.jpg" />
+  </ItemGroup>
+
+</Project>

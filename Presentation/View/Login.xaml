@@ -1,0 +1,63 @@
+﻿<Window x:Class="IntroSE.Kanban.Presentation.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IntroSE.Kanban.Presentation"
+        mc:Ignorable="d"
+        Title="Login" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        ResizeMode="CanResize" Height="450" Width="800" >
+    <Grid Background="#FF70D3D9"   >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="3.5*" />
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Content="Login" HorizontalAlignment="Center"  VerticalAlignment="Center"  FontSize="72" FontFamily="Curlz MT"  FontWeight="Normal" Foreground="#FF3C67BE">
+            <Label.Effect>
+                <DropShadowEffect/>
+            </Label.Effect>
+        </Label>
+        <Label Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" Content="{Binding Path=Message, Mode=OneWay}" Foreground="MediumVioletRed" HorizontalAlignment="Center" Height="40" />
+        <Label Grid.Column="1" Grid.Row="2" Content="Email:" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="20" Background="#FF3C67BE" FontWeight="Normal" Foreground="#DDFFFFFF" >
+            <Label.Effect>
+                <DropShadowEffect/>
+            </Label.Effect>
+        </Label>
+        <Label Grid.Column="1" Grid.Row="3" Content="Password:" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="20" FontWeight="Normal" Background="#FF3C67BE" Foreground="#DDFFFFFF">
+            <Label.Effect>
+                <DropShadowEffect/>
+            </Label.Effect>
+        </Label>
+        <Button Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"
+                materialDesign:ButtonProgressAssist.Value="-1"
+                materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
+                materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                Content="Login" Height="30" Width="132"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="LoginUser"  Foreground="#DDF9F9F9" Background="#FF2086C3"
+                Style="{DynamicResource MaterialDesignRaisedButton}"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3" />
+        <Button Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" Style="{StaticResource MaterialDesignFlatButton}" Click="OpenRegisterWindow" ToolTip="MaterialDesignFlatButton" Content="Register" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF175057" FontStyle="Normal"  />
+        <TextBox Grid.Column="2" Grid.Row="2"  Grid.ColumnSpan="2" Height="32" Text="{Binding Mode=OneWayToSource, Path=Email}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Width="450"
+            materialDesign:HintAssist.Hint="Email" materialDesign:TextFieldAssist.HasClearButton="True" materialDesign:HintAssist.HelperText="Enter your email" FontSize="16" Background="#FF71ACD7"/>
+        <PasswordBox Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" Height="32" Name="passwordBox" PasswordChar="♥" PasswordChanged="PasswordChanged" VerticalAlignment="Center" HorizontalAlignment="Center" Width="450"
+            materialDesign:HintAssist.Hint="Password" materialDesign:TextFieldAssist.HasClearButton="True" materialDesign:HintAssist.HelperText="Enter your password"  FontSize="16" Background="#FF71ACD7" />
+    </Grid>
+</Window>

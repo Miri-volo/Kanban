@@ -1,0 +1,926 @@
+﻿<Window x:Class="IntroSE.Kanban.Presentation.View.BoardView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IntroSE.Kanban.Presentation.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="BoardView" Height="600" Width="1280">
+    <Grid>
+        <materialDesign:DrawerHost
+            x:Name="DrawerHost"
+            Margin="0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            BorderThickness="2"
+            BorderBrush="{DynamicResource MaterialDesignDivider}" Grid.Row="1">
+            <materialDesign:DrawerHost.Style>
+                <Style
+                    TargetType="{x:Type materialDesign:DrawerHost}"
+                    BasedOn="{StaticResource {x:Type materialDesign:DrawerHost}}">
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding IsChecked, ElementName=BackgroundToggle}"
+                            Value="True">
+                            <Setter
+                                Property="OverlayBackground"
+                                Value="{DynamicResource PrimaryHueMidBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </materialDesign:DrawerHost.Style>
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <ScrollViewer Width="260" VerticalScrollBarVisibility="Auto" Style="{StaticResource MaterialDesignScrollViewer}">
+                    <StackPanel Margin="16" CanVerticallyScroll="True">
+                        <Expander Style="{StaticResource MaterialDesignExpander}">
+                            <Expander.Header>
+                                <HeaderedContentControl>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Bookshelf" Width="Auto" Height="Auto"/>
+                                        <Label Content="Boards" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+                                    </StackPanel>
+                                </HeaderedContentControl>
+                            </Expander.Header>
+                            <Grid Background="#FFE5E5E5">
+                                <StackPanel Margin="10">
+                                    <Expander Style="{StaticResource MaterialDesignExpander}">
+                                        <Expander.Header>
+                                            <HeaderedContentControl>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="BookPlusMultipleOutline" Width="Auto" Height="Auto"/>
+                                                    <Label Content="Add Board" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+                                                </StackPanel>
+                                            </HeaderedContentControl>
+                                        </Expander.Header>
+                                        <StackPanel Margin="10">
+                                            <TextBox BorderThickness="1" BorderBrush="Black" Background="White" 
+                                                     Style="{StaticResource MaterialDesignFilledTextBox}"
+                                                     materialDesign:HintAssist.Hint="Board Name" Grid.Column="1" 
+                                                     Text="{Binding Path=BoardNameInput, Mode=TwoWay}" FontSize="14" HorizontalContentAlignment="Center"/>
+                                            <Button
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                Click="AddBoard_Button_Click">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                    <materialDesign:PackIcon Kind="BookCheckOutline" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Margin="0,0,10,0" />
+                                                    <TextBlock Text="Add Board" FontSize="14"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander Style="{StaticResource MaterialDesignExpander}">
+                                        <Expander.Header>
+                                            <HeaderedContentControl>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="HandshakeOutline" Width="Auto" Height="Auto"/>
+                                                    <Label Content="Join Board" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+                                                </StackPanel>
+                                            </HeaderedContentControl>
+                                        </Expander.Header>
+                                        <StackPanel Margin="10">
+                                            <TextBox BorderThickness="1" BorderBrush="Black" Background="White" Style="{StaticResource MaterialDesignFilledTextBox}" 
+                                                 materialDesign:HintAssist.Hint="Board Name" Grid.Column="1"
+                                                 Text="{Binding Path=JoinBoardNameInput, Mode=TwoWay}" FontSize="14" HorizontalContentAlignment="Center"/>
+                                            <TextBox BorderThickness="1" BorderBrush="Black" Background="White" Style="{StaticResource MaterialDesignFilledTextBox}" 
+                                                 materialDesign:HintAssist.Hint="Creator Email" Grid.Column="1" 
+                                                 Text="{Binding Path=JoinBoardEmailInput, Mode=OneWayToSource}" FontSize="14" HorizontalContentAlignment="Center"/>
+                                            <Button
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                Click="JoinBoard_Button_Click">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                    <materialDesign:PackIcon Kind="AccountMultiplePlus" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Margin="0,0,10,0" />
+                                                    <TextBlock Text="Join Board" FontSize="14"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Expander>
+                                    <ListBox ItemsSource="{Binding Path=Boards, Mode=OneWay}" SelectionMode="Single" SelectedItem="{Binding Path=SelectedBoard, Mode=OneWayToSource}" PreviewMouseDown="ShowBoard">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Vertical">
+                                                    <Label>
+                                                        <Label.Content>
+                                                            <Grid Width="260" >
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="3*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="2*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Style="{StaticResource MaterialDesignButtonTextBlock}" Text="{Binding Path=BoardName, Mode=OneWay}"
+                                                                        TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
+                                                                <materialDesign:PackIcon Grid.Column="1" Kind="Identifier" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                                                                <TextBlock Grid.Column="2" Style="{StaticResource MaterialDesignButtonTextBlock}" Text="{Binding Path=Id, Mode=OneWay}"/>
+                                                            </Grid>
+                                                        </Label.Content>
+                                                    </Label>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </StackPanel>
+                            </Grid>
+                        </Expander>
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}" Height="Auto"
+                            materialDesign:ButtonAssist.CornerRadius="10"
+                            Margin="0,10,0,0"
+                            Click="TasksTab_Button_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <materialDesign:PackIcon Kind="OrderBoolAscendingVariant" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Margin="0,0,10,0" />
+                                <TextBlock Text="My Tasks" FontSize="14"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:DrawerHost.LeftDrawerContent>
+            <ContentControl>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <materialDesign:ColorZone x:Name="colorZone"
+                          Mode="PrimaryMid"
+                          Padding="16">
+                        <DockPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                materialDesign:RippleAssist.IsCentered="True">
+                                <ToggleButton
+                                    Style="{DynamicResource MaterialDesignHamburgerToggleButton}" 
+                                    Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+                                    CommandParameter="{x:Static Dock.Left}"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Margin="4"
+                                    Content="{materialDesign:PackIcon Kind=ArrowLeft}"/>
+                                <ComboBox
+                                    Margin="8 0 0 0"
+                                    BorderThickness="0"
+                                    materialDesign:ColorZoneAssist.Mode="Standard" SelectedIndex="{Binding SortTasks, Mode=TwoWay}"
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesignPaper}"
+                                    BorderBrush="{DynamicResource MaterialDesignPaper}">
+                                    <ComboBoxItem
+                                    Content="sort by..."/>
+                                    <ComboBoxItem
+                                    Content="due date" />
+                                </ComboBox>
+                                <materialDesign:ColorZone
+                                    Mode="Standard"
+                                    Padding="8 4 8 4"
+                                    CornerRadius="2"
+                                    Panel.ZIndex="1"
+                                    Margin="16 0 0 0"
+                                    materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition
+                  Width="Auto" />
+                                            <ColumnDefinition
+                  Width="*" />
+                                            <ColumnDefinition
+                  Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button
+                                        Style="{DynamicResource MaterialDesignToolButton}"
+                                        Click="Search_Button_Click">
+                                            <materialDesign:PackIcon
+                                            Kind="Search"
+                                            Opacity=".56" />
+                                        </Button>
+                                        <TextBox
+                                            Grid.Column="1"
+                                            Margin="8 0 0 0"
+                                            materialDesign:HintAssist.Hint="Filter tasks"
+                                            materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                                            BorderThickness="0"
+                                            MinWidth="200"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding FilterBar, Mode=OneWayToSource}"/>
+                                    </Grid>
+                                </materialDesign:ColorZone>
+                                <Button
+                                    Style="{DynamicResource MaterialDesignFlatMidBgButton}"
+                                    Margin="8 0 0 0"
+                                    Panel.ZIndex="0">
+                                    <materialDesign:PackIcon Kind="Send" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                <Border
+                                    x:Name="Border"
+                                    Padding="8"
+                                    BorderThickness="0 0 0 1"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <materialDesign:PackIcon Kind="AccountOutline" HorizontalAlignment="Center" VerticalAlignment="Center" Width="24" Height="24" />
+                                        <StackPanel
+                                        Margin="8 0 0 0"
+                                        Grid.Column="1">
+                                            <TextBlock
+                                            Text="{Binding UserEmail}"
+                                            FontWeight="Bold" TextAlignment="Center" FontSize="20"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <materialDesign:PopupBox
+                              DockPanel.Dock="Right"
+                              PlacementMode="BottomAndAlignRightEdges" HorizontalAlignment="Right">
+                                    <ListBox>
+                                        <ListBoxItem>
+                                            <Button Content="Logout" Click="Logout_Button_Click"/>
+                                        </ListBoxItem>
+                                    </ListBox>
+                                </materialDesign:PopupBox>
+                            </StackPanel>
+                        </DockPanel>
+                    </materialDesign:ColorZone>
+                    <TabControl x:Name="TabControl" SelectedIndex="{Binding Path=TabIndex, Mode=OneWay}"
+                          Style="{StaticResource MaterialDesignNavigatilRailTabControl}"
+                          materialDesign:ColorZoneAssist.Mode="Standard"
+                          materialDesign:ShadowAssist.ShadowDepth="Depth0" Margin="0,0,0,0" Grid.Row="1">
+                        <TabItem
+                            Style="{StaticResource MaterialDesignNavigationRailTabItem}" Width="0" Height="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Menu BorderBrush="Gray" Grid.Row="1" Style="{StaticResource MaterialDesignMenu}" VerticalAlignment="Bottom" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                                    <MenuItem Header="{Binding Path=BoardNameEdit, Mode=OneWay}"
+                                  Icon="{materialDesign:PackIcon Kind=BookSettingsOutline}" FlowDirection="LeftToRight">
+                                        <MenuItem Header="Add Task" Icon="{materialDesign:PackIcon Kind=StickerPlusOutline}" 
+                                      Click="AddTask_Menu_Click"/>
+                                        <MenuItem Header="Add Column" Icon="{materialDesign:PackIcon Kind=TableColumnPlusAfter}" 
+                                      Click='AddColumn_Menu_Click'/>
+                                        <MenuItem Header="Remove Me" Icon="{materialDesign:PackIcon Kind=DeleteOutline}" 
+                                      Click="RemoveBoard_Menu_Click"/>
+                                    </MenuItem>
+                                    <MenuItem Header="{Binding Path=ColumnNameEdit, Mode=OneWay}" FlowDirection="LeftToRight"
+                                  Icon="{materialDesign:PackIcon  Kind=TableColumn}">
+                                        <MenuItem Header="Limit Me To..." Icon="{materialDesign:PackIcon Kind=FormatColumns}"
+                                      Click="LimitColumn_Menu_Click"/>
+                                        <MenuItem Header="Get My Limit?" Icon="{materialDesign:PackIcon Kind=FormatColumns}"
+                                      Click="GetColumnLimit_Menu_Click"/>
+                                        <MenuItem Header="Rename Me To..." Icon="{materialDesign:PackIcon Kind=PencilOutline}"
+                                      Click="RenameColumn_Menu_Click"/>
+                                        <MenuItem Header="Shift My Ordinal..."
+                                      Click="ShiftColumn_Menu_Click">
+                                            <MenuItem.Icon>
+                                                <StackPanel>
+                                                    <materialDesign:PackIcon Kind="TableArrowRight"/>
+                                                    <materialDesign:PackIcon Kind="TableArrowLeft"/>
+                                                </StackPanel>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Remove Me" Icon="{materialDesign:PackIcon Kind=DeleteOutline}"
+                                      Click="RemoveColumn_Menu_Click"/>
+                                    </MenuItem>
+                                    <MenuItem Header="{Binding Path=TaskNameEdit, Mode=OneWay}"
+                                  Icon="{materialDesign:PackIcon Kind=NoteEditOutline}" FlowDirection="LeftToRight">
+                                        <MenuItem Header="Update My DueDate" Icon="{materialDesign:PackIcon Kind=CalendarRange}"
+                                      Click="UpdateTaskDueDate_Menu_Click"/>
+                                        <MenuItem Header="Edit My Title" Icon="{materialDesign:PackIcon Kind=FormatTitle}"
+                                      Click="EditTaskTitle_Menu_Click"/>
+                                        <MenuItem Header="Edit My Description" Icon="{materialDesign:PackIcon Kind=ImageText}"
+                                      Click="EditTaskDescription_Menu_Click"/>
+                                        <MenuItem Header="Advance Me" Icon="{materialDesign:PackIcon Kind=NoteCheckOutline}"
+                                      Click="AdvanceTask_Menu_Click"/>
+                                        <MenuItem Header="Assign Me To..." Icon="{materialDesign:PackIcon Kind=AccountStarOutline}"
+                                           Click="AssignTask_Menu_Click"/>
+                                    </MenuItem>
+                                    <MenuItem IsCheckable="False" IsEnabled="False" 
+                                            Icon="{materialDesign:PackIcon Kind=Dot}" Opacity="0.7" FlowDirection="LeftToRight"/>
+                                    <MenuItem Header="Options Bar" IsCheckable="False" IsEnabled="False" 
+                                            Icon="{materialDesign:PackIcon Kind=Dot}" Opacity="0.7" FlowDirection="LeftToRight"/>
+                                </Menu>
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                    <ListBox Style="{StaticResource MaterialDesignCardsListBox}" ToolTip="Click on column's title to select column" ItemsSource="{Binding Path=Columns, Mode=OneWay}" SelectedItem="{Binding Path=SelectedColumn, Mode=TwoWay}" SelectionMode="Single">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="300">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Cursor="Hand" Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <materialDesign:Chip Grid.Row="0" MinWidth="33" Icon="{Binding Path=Ordinal, Mode=OneWay}" IsHitTestVisible="False"
+                                                                         Focusable="True">
+                                                        <ContentControl>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding Path=Name, Mode=OneWay}" 
+                                                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                                                TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                                            </StackPanel>
+                                                        </ContentControl>
+                                                    </materialDesign:Chip>
+                                                    <Separator Grid.Row="1" Margin="5"/>
+                                                    <Canvas x:Name="canvas" Grid.Row="2" >
+                                                        <ScrollViewer Canvas.Top="0" Height="{Binding ActualHeight, ElementName=canvas, Mode=OneWay}" VerticalScrollBarVisibility="Visible" VerticalContentAlignment="Stretch">
+                                                            <ListBox Grid.Row="2"
+                                                            ItemsSource="{Binding Path=Tasks, Mode=OneWay}" Style="{StaticResource MaterialDesignCardsListBox}"
+                                                            SelectionMode="Single" 
+                                                            VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Center" IsTabStop="True">
+                                                                <ListBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border BorderThickness="3">
+                                                                            <Border.BorderBrush>
+                                                                                <SolidColorBrush Color="Blue" Opacity="{Binding BorderTaskUserAssign, Mode=OneWay}"/>
+                                                                            </Border.BorderBrush>
+                                                                            <materialDesign:Card
+                                                                                Background="{Binding Path=BackgroundTaskState, Mode=OneWay}"
+                                                                                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                                                                Padding="0"
+                                                                                Width="275">
+                                                                                <Grid>
+                                                                                    <Grid.RowDefinitions>
+                                                                                        <RowDefinition Height="Auto" />
+                                                                                        <RowDefinition Height="Auto" />
+                                                                                        <RowDefinition Height="Auto" />
+                                                                                    </Grid.RowDefinitions>
+                                                                                    <StackPanel Grid.Row="0" Margin="16 16 16 4">
+                                                                                        <Button Focusable="True" Content="Select Task" Command="{Binding Select}" CommandParameter="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                                                        <TextBlock
+                                                                                            Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                                                            Text="{Binding Path=Task.Title, Mode=OneWay}" />
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <materialDesign:PackIcon Kind="AccountStarOutline" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="10 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="Assignee: " />
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="0 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="{Binding Path=Task.EmailAssignee, Mode=OneWay}" />
+                                                                                        </StackPanel>
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <materialDesign:PackIcon Kind="CalendarAlert" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="10 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="Due: " />
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="0 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="{Binding Path=Task.DueDate, Mode=OneWay}"/>
+                                                                                        </StackPanel>
+                                                                                        <StackPanel Orientation="Horizontal">
+                                                                                            <materialDesign:PackIcon Kind="CalendarEdit" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="10 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="Created: " />
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="0 5 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="{Binding Path=Task.CreationTime, Mode=OneWay}"/>
+                                                                                        </StackPanel>
+                                                                                    </StackPanel>
+                                                                                    <Separator
+                                                                                    Grid.Row="1"
+                                                                                    Style="{StaticResource MaterialDesignDarkSeparator}" />
+                                                                                    <Expander Grid.Row="2">
+                                                                                        <Expander.Header>
+                                                                                            <TextBlock
+                                                                                            Grid.Row="2"
+                                                                                            Margin="16 0 16 8"
+                                                                                            VerticalAlignment="Center"
+                                                                                            HorizontalAlignment="Left"
+                                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                                            Text="Description" />
+                                                                                        </Expander.Header>
+                                                                                        <TextBlock TextWrapping="Wrap"
+                                                                            Grid.Row="2"
+                                                                            Margin="16 0 16 8"
+                                                                            VerticalAlignment="Center"
+                                                                            HorizontalAlignment="Left"
+                                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                            Text="{Binding Path=Task.Description, Mode=OneWay}"/>
+                                                                                    </Expander>
+                                                                                </Grid>
+                                                                            </materialDesign:Card>
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </ListBox.ItemTemplate>
+                                                            </ListBox>
+                                                        </ScrollViewer>
+                                                    </Canvas>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
+                            </Grid>
+                        </TabItem>
+                        <TabItem
+                            Style="{StaticResource MaterialDesignNavigationRailTabItem}" Width="0" Height="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Menu Grid.Row="1" Style="{StaticResource MaterialDesignMenu}" VerticalAlignment="Bottom" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                                    <MenuItem Header="{Binding Path=TaskNameEdit}"
+                                  Icon="{materialDesign:PackIcon Kind=NoteEditOutline}"/>
+                                    <MenuItem Header="Update My DueDate" Icon="{materialDesign:PackIcon Kind=CalendarRange}"
+                                      Click="UpdateTaskDueDate_Menu_Click"/>
+                                    <MenuItem Header="Edit My Title" Icon="{materialDesign:PackIcon Kind=FormatTitle}"
+                                      Click="EditTaskTitle_Menu_Click"/>
+                                    <MenuItem Header="Edit My Description" Icon="{materialDesign:PackIcon Kind=ImageText}"
+                                      Click="EditTaskDescription_Menu_Click"/>
+                                    <MenuItem Header="Advance Me" Icon="{materialDesign:PackIcon Kind=NoteCheckOutline}"
+                                      Click="AdvanceTask_Menu_Click"/>
+                                    <MenuItem Header="Assign Me To..." Icon="{materialDesign:PackIcon Kind=AccountStarOutline}"
+                                      Click="AssignTask_Menu_Click"/>
+
+                                </Menu>
+                                <ListBox ItemsSource="{Binding Path=FilteredTasks, Mode=OneWay}" MouseDoubleClick="ShowBoard" 
+                                         SelectedItem="{Binding Path=SelectedTask, Mode=TwoWay}" ToolTip="Click Once to edit - Double to show task's board.">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <materialDesign:Card
+                                                    Background="{Binding Path=BackgroundTaskState, Mode=OneWay}"
+                                                    Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                                    Padding="0"
+                                                    >
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0" Margin="16 16 16 4" Orientation="Horizontal" VerticalAlignment="Top">
+                                                        <TextBlock
+                                                            Style="{StaticResource MaterialDesignHeadline5TextBlock}" Width="250"
+                                                            Text="{Binding Path=Task.Title, Mode=OneWay}" TextTrimming="CharacterEllipsis"/>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="AccountStarOutline" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="10 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="Assignee: " />
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="0 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="{Binding Path=Task.EmailAssignee, Mode=OneWay}" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="CalendarAlert" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="10 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="Due: " />
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="0 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="{Binding Path=Task.DueDate, Mode=OneWay}"/>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="CalendarEdit" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="10 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="Created: " />
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="0 5 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="{Binding Path=Task.CreationTime, Mode=OneTime}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Separator
+                                                        Grid.Column="1"
+                                                        Style="{StaticResource MaterialDesignDarkSeparator}" />
+                                                    <Expander Grid.Column="2">
+                                                        <Expander.Header>
+                                                            <TextBlock
+                                                                Grid.Column="2"
+                                                                Margin="16 0 16 8"
+                                                                VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left"
+                                                                Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                                Text="Description" />
+                                                        </Expander.Header>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                            Grid.Column="2"
+                                                            Margin="16 0 16 8"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Left"
+                                                            Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                            Text="{Binding Path=Task.Description, Mode=OneWay}"/>
+                                                    </Expander>
+                                                </Grid>
+                                            </materialDesign:Card>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </ContentControl>
+        </materialDesign:DrawerHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=AddTaskDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel MaxWidth="400" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBox TextWrapping="Wrap" BorderThickness="1" BorderBrush="Black" Background="White" Margin="5,5,5,5"
+                             Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Task Title"
+                             Text="{Binding Path=TaskTitleInputAdd, Mode=OneWayToSource}" HorizontalContentAlignment="Center"/>
+                        <TextBox TextWrapping="Wrap" BorderThickness="1" BorderBrush="Black" Background="White" Margin="5,5,5,5"
+                             Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Task Description"
+                             Text="{Binding Path=TaskDescriptionInputAdd, Mode=OneWayToSource}" HorizontalContentAlignment="Center"/>
+                        <DatePicker
+                            materialDesign:HintAssist.Hint="Pick Date" Margin="5,5,5,5"
+                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                            SelectedDate="{Binding Path=SelectedDueDateAdd, Mode=OneWayToSource}"/>
+                    </StackPanel>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                            Badge="{materialDesign:PackIcon NotePlusOutline}"
+                            BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="AddTask_Button_Click" 
+                                VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                        Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=AddColumnDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel MaxWidth="400" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBox BorderThickness="1" BorderBrush="Black" Background="White"
+                             Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Column Name"
+                             Text="{Binding Path=ColumnNameInputAdd, Mode=OneWayToSource}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5,5,5,5"/>
+                        <TextBox BorderThickness="1" BorderBrush="Black" Background="White" Margin="5,5,5,5" 
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Ordinal"
+                            Text="{Binding Path=ColumnOrdinalInputAdd, Mode=OneWayToSource}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="AddColumn_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=LimitColumnDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Row="0" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Column Task Limit"
+                            Text="{Binding Path=ColumnLimitInput, Mode=OneWayToSource}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="LimitColumn_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=RenameColumnDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Row="0" MaxWidth="400" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Column Name"
+                            Text="{Binding Path=ColumnNameInputEdit, Mode=TwoWay}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="EditColumnName_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=ShiftColumnDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox MaxWidth="400" Grid.Row="0" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Shift by"
+                            Text="{Binding Path=ShiftColumnInput, Mode=OneWayToSource}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="ShiftColumn_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=UpdateTaskDueDateDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <DatePicker Grid.Row="0"
+                            materialDesign:HintAssist.Hint="Pick Date" Margin="5,5,5,5"
+                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                            SelectedDate="{Binding Path=SelectedDueDateUpdate, Mode=OneWayToSource}"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                            Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                            BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="UpdateTaskDueDate_Button_Click" 
+                                VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                        Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=EditTaskTitleDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox MaxWidth="400" TextWrapping="Wrap" Grid.Row="0" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Task Title"
+                            Text="{Binding Path=EditTaskTitleInput, Mode=TwoWay}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="EditTaskTitle_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=EditTaskDescriptionDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox MaxWidth="400" TextWrapping="Wrap" Grid.Row="0" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Task Description"
+                            Text="{Binding Path=EditTaskDescriptionInput, Mode=TwoWay}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="EditTaskDescription_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost IsOpen="{Binding Path=AssignTaskDialog, Mode=OneWay}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox MaxWidth="400" TextWrapping="Wrap" Grid.Row="0" Margin="5,5,5,5" BorderThickness="1" BorderBrush="Black" Background="White"
+                            Style="{StaticResource MaterialDesignFilledTextBox}" materialDesign:HintAssist.Hint="Board Member Email"
+                            Text="{Binding Path=AssignTaskInput, Mode=OneWayToSource}" HorizontalContentAlignment="Center"/>
+                    <Separator Margin="5,5,5,10" Grid.Row="1"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged
+                                Badge="{materialDesign:PackIcon ContentSaveOutline}"
+                                BadgeColorZoneMode="SecondaryMid">
+                            <Button Content="Save" Click="AssignTask_Button_Click" 
+                                    VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                        <materialDesign:Badged 
+                            Badge="{materialDesign:PackIcon Kind=Cancel}" BadgeColorZoneMode="SecondaryMid">
+                            <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                    Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="Auto" Height="Auto"/>
+                        </materialDesign:Badged>
+                        <Separator Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+        <materialDesign:Snackbar 
+                        IsActive="{Binding Path=ShowMessage}"
+                        HorizontalAlignment="Stretch" Grid.RowSpan="2">
+            <materialDesign:SnackbarMessage
+                Content="{Binding Path=Message}"
+                ActionContent="OK" 
+                ActionClick="CloseMessageBar_Button_Click"/>
+        </materialDesign:Snackbar>
+    </Grid>
+
+</Window>
